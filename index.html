@@ -21,10 +21,10 @@
   --mono:'JetBrains Mono',monospace;--body:'Outfit',sans-serif;
   --r:14px;--r2:10px;--r3:8px;
 }
-html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--body);font-size:14px;line-height:1.5}
+html,body{width:100%;min-height:100%;overflow-x:hidden;overflow-y:auto;background:var(--bg);color:var(--text);font-family:var(--body);font-size:14px;line-height:1.5}
 
 /* LAYOUT */
-.app{display:flex;flex-direction:column;height:100vh;max-width:430px;margin:0 auto;position:relative;overflow:hidden}
+.app{display:flex;flex-direction:column;width:min(1440px,calc(100vw - 24px));min-height:calc(100dvh - 24px);height:auto;max-width:none;margin:0 auto;position:relative;overflow:hidden}
 
 /* Header */
 .header{display:flex;align-items:center;padding:14px 18px 10px;gap:12px;background:linear-gradient(180deg,var(--s1) 0%,rgba(14,17,32,0) 100%);position:relative;z-index:10;flex-shrink:0}
@@ -54,10 +54,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .tab-badge.show{display:block}
 
 /* Pages */
-.pages{flex:1;overflow:hidden;position:relative}
-.page{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:var(--dim) transparent;padding:4px 14px 90px;display:none;flex-direction:column;gap:14px;animation:slideIn .2s ease}
-.page.active{display:flex}
-@keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.pages{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;position:relative;scrollbar-width:thin;scrollbar-color:var(--dim) transparent}
+.page{position:relative;inset:auto;overflow:visible;scrollbar-width:thin;scrollbar-color:var(--dim) transparent;padding:4px 14px 64px;display:none;flex-direction:column;gap:14px;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(16px) scale(.99);transform-origin:50% 12%;transition:opacity .28s ease,transform .28s cubic-bezier(.2,.8,.2,1),visibility 0s linear .28s}
+.page.active{display:flex;opacity:1;visibility:visible;pointer-events:auto;transform:none;z-index:1;transition:opacity .28s ease,transform .28s cubic-bezier(.2,.8,.2,1),visibility 0s}
+.page::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at top right, rgba(129,140,248,.06), transparent 24%),radial-gradient(circle at bottom left, rgba(110,231,183,.05), transparent 28%);pointer-events:none;z-index:0}
+.page > *{position:relative;z-index:1}
 
 /* Cards */
 .card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px;position:relative;overflow:hidden}
@@ -395,7 +396,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .voice-btn.listening{background:rgba(244,114,182,0.15);border-color:var(--accent3);animation:pulse 1s infinite}
 
 /* ══════════ BOTTOM NAV ══════════ */
-.bottomnav{display:none;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(8,10,18,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:8px 0 env(safe-area-inset-bottom,8px);z-index:20}
+.bottomnav{display:none;position:fixed;bottom:0;left:0;transform:none;width:100%;max-width:none;background:rgba(8,10,18,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:8px 0 env(safe-area-inset-bottom,8px);z-index:20}
 @media(max-width:480px){.bottomnav{display:flex}.tabbar{display:none}}
 .bnav{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0;transition:color .15s;color:var(--dim)}
 .bnav svg{width:20px;height:20px}
@@ -413,6 +414,34 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 /* Toast */
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--s2);border:1px solid var(--border2);border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;z-index:999;transition:transform .3s;white-space:nowrap;max-width:calc(100% - 40px);text-align:center}
 .toast.show{transform:translateX(-50%) translateY(0)}
+
+@media(max-width:900px){
+  .app{width:100vw;min-height:100dvh}
+  .pages{padding-bottom:88px}
+  .page{padding:4px 12px 96px}
+}
+
+@media(max-width:700px){
+  .header{padding:12px 14px 10px}
+  .tabbar{padding:0 8px 8px}
+  .quick-stats{grid-template-columns:1fr 1fr;gap:8px}
+  .page{padding:4px 10px 108px;gap:12px}
+  .form-row{flex-direction:column}
+  .template-grid,.topic-btn-grid,.timer-modes,.dsa-stats-grid,.topic-grid{grid-template-columns:1fr}
+  .study-week{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .code-editor-header{flex-wrap:wrap;align-items:flex-start}
+  .editor-actions{width:100%;flex-wrap:wrap}
+  .msg-bubble{max-width:88%}
+}
+
+@media(max-width:560px){
+  .study-week{grid-template-columns:repeat(1,minmax(0,1fr))}
+  .quick-stats{grid-template-columns:1fr 1fr}
+  .code-textarea{min-height:240px}
+  .timer-ring{width:150px;height:150px}
+  .timer-ring svg{width:150px;height:150px}
+  .timer-time{font-size:30px}
+}
 </style>
 </head>
 <body>
@@ -1102,17 +1131,49 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 const API_URL = 'https://api.anthropic.com/v1/messages';
 const API_KEY = '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'; // Replace this locally before using the app
 
-async function callClaude(prompt, systemPrompt = '', maxTokens = 1000) {
-  const messages = [{ role: 'user', content: prompt }];
-  const body = { model: 'claude-sonnet-4-20250514', max_tokens: maxTokens, messages };
-  if (systemPrompt) body.system = systemPrompt;
-  const res = await fetch(API_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-calls': 'true' }
-  });
-  if (!res.ok) throw new Error('API error ' + res.status);
-  const data = await res.json();
-  return data.content[0].text;
+async function readProviderError(res) {
+  const text = await res.text().catch(() => '');
+  if (!text) return `AI API error ${res.status}`;
+  try {
+    const data = JSON.parse(text);
+    return data?.error?.message || data?.message || `AI API error ${res.status}`;
+  } catch {
+    return text.slice(0, 300) || `AI API error ${res.status}`;
+  }
+}
+
+async function callGemini(prompt, systemPrompt = '', maxTokens = 1000) {
+  const messages = [];
+  if (systemPrompt) messages.push({ role: 'system', content: systemPrompt });
+  messages.push({ role: 'user', content: prompt });
+  try {
+    const res = await fetch(DEEPSEEK_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: DEEPSEEK_MODEL,
+        messages,
+        max_tokens: maxTokens,
+        temperature: 0.7
+      })
+    });
+    if (!res.ok) {
+      const error = await readProviderError(res);
+      if (/quota|billing|rate limit|permission|api key|disabled|unauthorized|forbidden/i.test(error)) {
+        return localAIResponse(prompt, systemPrompt);
+      }
+      throw new Error(error);
+    }
+    const data = await res.json();
+    const text = data?.choices?.[0]?.message?.content?.trim();
+    if (!text) return localAIResponse(prompt, `${systemPrompt} empty_response`);
+    return text;
+  } catch (err) {
+    return localAIResponse(prompt, `${systemPrompt} ${err?.message || 'provider_error'}`);
+  }
 }
 
 // ═══════════════════════════ STATE ═══════════════════════════
@@ -1137,6 +1198,72 @@ function showToast(msg, duration=2500) {
   const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'), duration);
 }
+function localAIResponse(prompt, systemPrompt = '') {
+  const lower = `${systemPrompt}\n${prompt}`.toLowerCase();
+
+  const taskMatch = prompt.match(/Task:\s*"([^"]+)"/i);
+  if (taskMatch && /classify this task/.test(lower)) {
+    const text = taskMatch[1].toLowerCase();
+    if (/(assignment|homework|submit|lab|worksheet)/.test(text)) return 'assignment';
+    if (/(project|build|app|website|portfolio)/.test(text)) return 'project';
+    if (/(exam|test|quiz|mid|final|revision|study)/.test(text)) return 'exam';
+    if (/(apply|email|call|buy|pay|plan|schedule|personal)/.test(text)) return 'personal';
+    if (/(leetcode|code|debug|api|react|flutter|node|js|python|git)/.test(text)) return 'dev';
+    return 'other';
+  }
+
+  if (/create a \d+-day study plan/.test(lower)) {
+    const subject = (prompt.match(/Create a \d+-day study plan for "([^"]+)"/i) || [,'this subject'])[1];
+    const days = Number((prompt.match(/Create a (\d+)-day study plan/i) || [,'7'])[1]) || 7;
+    let out = `### ${days}-Day Study Plan for ${subject}\n\n`;
+    for (let i = 1; i <= days; i++) {
+      out += `**Day ${i}**\n`;
+      out += `- 45 min: Core concepts of ${subject}\n`;
+      out += `- 45 min: Practice questions / examples\n`;
+      out += `- 30 min: Review mistakes and notes\n`;
+      out += `- 15 min: Quick recap and break\n\n`;
+    }
+    return out.trim();
+  }
+
+  if (/write a professional, concise email/.test(lower)) {
+    const to = (prompt.match(/To:\s*([^\.]+)\./i) || [,'(recipient not set)'])[1].trim();
+    const subject = (prompt.match(/Subject:\s*([^\.]+)\./i) || [,'(no subject)'])[1].trim();
+    const ctx = (prompt.match(/Context:\s*([\s\S]*?)\s*Return ONLY/i) || [,'the request'])[1].trim();
+    return `Dear ${to || 'Sir/Ma\'am'},\n\nI hope you are doing well. ${ctx} I am writing to request your support and consideration regarding this matter.\n\nSubject: ${subject || 'Request'}\n\nThank you for your time and consideration.\n\nRegards,\nTanvi`;
+  }
+
+  if (/you are a resume coach/.test(lower)) {
+    return `### Resume Notes\n- Keep the summary focused on impact and target role.\n- Use action verbs and numbers where possible.\n- Put the strongest projects first.\n\n### Improved Summary\nB.Tech CS student focused on building practical software projects in Flutter, Firebase, and web development. Interested in SDE internships, with a strong interest in problem solving, clean UI, and shipping useful products.\n\n### Suggestions\n- Add measurable results for projects and internships.\n- Mention tools, scale, and outcomes for each project.\n- Add skills that match the roles you are applying for, such as React, Node.js, Git, SQL, DSA, and Firebase.`;
+  }
+
+  if (/ask question #/.test(lower)) {
+    const topic = (prompt.match(/for a ([^ ]+) technical interview/i) || [,'technical'])[1];
+    return `Explain how you would approach a ${topic} problem end to end, from understanding requirements to discussing tradeoffs.`;
+  }
+
+  if (/evaluate this answer/.test(lower)) {
+    return `### Score: 6/10\n- Good: Your answer shows basic understanding and stays on topic.\n- Missing: Add more structure, mention tradeoffs, and include a small example.\n- Model answer: Start with a clear definition, then explain the core idea step by step, and finish with a short example plus complexity or impact.`;
+  }
+
+  if (/debug this/.test(lower)) {
+    return `### Debugging Notes\n- Check for syntax errors first.\n- Verify variable names, async handling, and null checks.\n- Inspect edge cases and API responses.\n\n### Corrected Version\nI could not run the code locally, but the most likely fix is to validate inputs, handle failed promises, and ensure the function returns the expected value.`;
+  }
+
+  if (/explain this/.test(lower)) {
+    return `### Explanation\n- This code appears to implement a workflow around the provided snippet.\n- Review the control flow, inputs, outputs, and any async operations.\n- If you want, I can help break it into smaller parts and explain each step manually.`;
+  }
+
+  if (/generate a daily briefing|daily digest/.test(lower)) {
+    return `### Daily Briefing\n- Focus on the highest-priority tasks first.\n- Finish one meaningful technical task before switching contexts.\n- Keep breaks short and protect one block of deep work.\n\n### Today\n- Tackle the most urgent deadline.\n- Review one DSA topic.\n- Close the day by updating your notes and tomorrow's plan.`;
+  }
+
+  if (/personal ai developer agent|aria/.test(lower) || /chat/i.test(systemPrompt)) {
+    return `I can still help offline.\n\nTell me the task, and I’ll help with planning, debugging, study structure, email drafting, or task prioritization using local rules when DeepSeek is unavailable.`;
+  }
+
+  return `### Offline Fallback\nDeepSeek is unavailable right now, so I’m using a local response.\n\n- Review the prompt and break it into smaller steps.\n- Use the relevant notes, tasks, or code in your app.\n- If you want, I can still help draft a structured answer manually.`;
+}
 function formatMD(text) {
   text = text.replace(/```(\w+)?\n?([\s\S]*?)```/g, (_,l,c) => `<pre><code>${esc(c.trim())}</code></pre>`);
   text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
@@ -1154,7 +1281,10 @@ function formatMD(text) {
 let curPage = 'dashboard';
 function goPage(id, el) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
+  const page=document.getElementById('page-'+id);
+  if(page){page.classList.add('active');page.scrollTop=0;}
+  const pagesEl=document.querySelector('.pages');
+  if(pagesEl) pagesEl.scrollTop=0;
   curPage = id;
   document.querySelectorAll('.tab,.bnav').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('[data-page="'+id+'"]').forEach(t=>t.classList.add('active'));
@@ -1229,10 +1359,10 @@ async function generateInsight() {
   const overdue = state.tasks.filter(t=>!t.done&&t.due&&t.due<today()).length;
   const prompt = `Give Tanvi (CS student, developer) a single warm, specific, actionable tip for today. Context: ${pending} pending tasks, ${overdue} overdue, ${state.dsaProblems.length} DSA problems solved, ${state.focusSessions} focus sessions today. Day: ${new Date().toLocaleDateString('en',{weekday:'long'})}. Max 35 words, no bullet points.`;
   try {
-    const insight = await callClaude(prompt);
+    const insight = await callGemini(prompt);
     el.querySelector('p').innerHTML = `<strong>✨ AI Insight:</strong> ${insight}`;
   } catch(e) {
-    el.querySelector('p').innerHTML = `<strong>✨ AI Insight:</strong> Start with your hardest task — momentum builds from one focused win!`;
+    el.querySelector('p').innerHTML = `<strong>✨ AI Insight:</strong> ${localAIResponse(prompt, 'You are ARIA, a personal developer agent. Be warm, specific, and energising.')}`;
   }
 }
 
@@ -1245,7 +1375,7 @@ async function addTask() {
   // AI auto-tag if enabled
   if(state.autoSettings.autotag) {
     try {
-      const cat = await callClaude(`Classify this task into exactly one category: assignment, project, exam, personal, dev, other. Task: "${title}". Reply with just the category word.`);
+      const cat = await callGemini(`Classify this task into exactly one category: assignment, project, exam, personal, dev, other. Task: "${title}". Reply with just the category word.`);
       const c = cat.trim().toLowerCase();
       if(['assignment','project','exam','personal','dev','other'].includes(c)) category=c;
     } catch(e){}
@@ -1428,10 +1558,12 @@ async function aiExplain() {
   const box=document.getElementById('codeAiBox');
   box.className='ai-response-box show';
   box.innerHTML='<span style="color:var(--muted)">✨ Explaining...</span>';
+  const prompt=`Explain this ${currentLang} code clearly and concisely for a CS student. Highlight key concepts, time complexity if applicable, and any improvements.\n\n\`\`\`${currentLang}\n${code}\n\`\`\``;
+  const systemPrompt='You are a CS tutor for a CS student named Tanvi. Be clear, educational, and concise.';
   try {
-    const resp=await callClaude(`Explain this ${currentLang} code clearly and concisely for a CS student. Highlight key concepts, time complexity if applicable, and any improvements.\n\n\`\`\`${currentLang}\n${code}\n\`\`\``,'You are a CS tutor for a CS student named Tanvi. Be clear, educational, and concise.',1500);
+    const resp=await callGemini(prompt, systemPrompt, 1500);
     box.innerHTML=formatMD(resp);
-  } catch(e) { box.innerHTML='<span style="color:var(--red)">Error: '+esc(e.message)+'</span>'; }
+  } catch(e) { box.innerHTML=formatMD(localAIResponse(prompt, systemPrompt)); }
 }
 
 async function aiDebug() {
@@ -1440,10 +1572,12 @@ async function aiDebug() {
   const box=document.getElementById('codeAiBox');
   box.className='ai-response-box show';
   box.innerHTML='<span style="color:var(--muted)">🐛 Debugging...</span>';
+  const prompt=`Debug this ${currentLang} code. Find bugs, explain what's wrong, and provide the corrected code.\n\n\`\`\`${currentLang}\n${code}\n\`\`\``;
+  const systemPrompt='You are a debugging assistant. Be precise and provide corrected code.';
   try {
-    const resp=await callClaude(`Debug this ${currentLang} code. Find bugs, explain what's wrong, and provide the corrected code.\n\n\`\`\`${currentLang}\n${code}\n\`\`\``, 'You are a debugging assistant. Be precise and provide corrected code.',1500);
+    const resp=await callGemini(prompt, systemPrompt,1500);
     box.innerHTML=formatMD(resp);
-  } catch(e) { box.innerHTML='<span style="color:var(--red)">Error: '+esc(e.message)+'</span>'; }
+  } catch(e) { box.innerHTML=formatMD(localAIResponse(prompt, systemPrompt)); }
 }
 
 function saveSnippet() {
@@ -1556,12 +1690,17 @@ async function nextQuestion() {
   typing.innerHTML='<span style="color:var(--muted)">Thinking of a question...</span>';
   msgs.appendChild(typing);
   try {
-    const q=await callClaude(`Ask question #${interviewQNum} for a ${interviewTopic} technical interview for a UG CS student. Make it clear and specific. Just the question, no preamble or numbering.`, 'You are a tech interviewer. Ask one clear, specific question.');
+    const q=await callGemini(`Ask question #${interviewQNum} for a ${interviewTopic} technical interview for a UG CS student. Make it clear and specific. Just the question, no preamble or numbering.`, 'You are a tech interviewer. Ask one clear, specific question.');
     currentQuestion=q.trim();
     typing.innerHTML=`<strong>Q${interviewQNum}:</strong> ${esc(currentQuestion)}`;
     document.getElementById('interviewAnswer').value='';
     document.getElementById('interviewAnswer').focus();
-  } catch(e){typing.innerHTML='Error loading question. Try again.';}
+  } catch(e){
+    currentQuestion=localAIResponse(`Ask question #${interviewQNum} for a ${interviewTopic} technical interview for a UG CS student. Make it clear and specific. Just the question, no preamble or numbering.`, 'You are a tech interviewer. Ask one clear, specific question.');
+    typing.innerHTML=`<strong>Q${interviewQNum}:</strong> ${esc(currentQuestion)}`;
+    document.getElementById('interviewAnswer').value='';
+    document.getElementById('interviewAnswer').focus();
+  }
 }
 
 async function submitAnswer() {
@@ -1575,12 +1714,17 @@ async function submitAnswer() {
   fb.textContent='Evaluating...';
   msgs.appendChild(fb);
   try {
-    const eval_=await callClaude(`Question: ${currentQuestion}\nStudent answer: ${ans}\n\nEvaluate this answer for a ${interviewTopic} interview. Give: 1) Score (0-10), 2) What was good, 3) What was missing, 4) Model answer in 2-3 sentences. Keep it under 120 words.`, 'You are a fair technical interviewer giving constructive feedback.');
+    const eval_=await callGemini(`Question: ${currentQuestion}\nStudent answer: ${ans}\n\nEvaluate this answer for a ${interviewTopic} interview. Give: 1) Score (0-10), 2) What was good, 3) What was missing, 4) Model answer in 2-3 sentences. Keep it under 120 words.`, 'You are a fair technical interviewer giving constructive feedback.');
     fb.innerHTML=formatMD(eval_);
     // Extract score
     const scoreMatch=eval_.match(/(\d+)\s*(?:\/\s*10|out of 10)/i);
     if(scoreMatch) interviewScore+=parseInt(scoreMatch[1]);
-  } catch(e){fb.textContent='Could not evaluate. Try again.';}
+  } catch(e){
+    const eval_=localAIResponse(`Question: ${currentQuestion}\nStudent answer: ${ans}\n\nEvaluate this answer for a ${interviewTopic} interview. Give: 1) Score (0-10), 2) What was good, 3) What was missing, 4) Model answer in 2-3 sentences. Keep it under 120 words.`, 'You are a fair technical interviewer giving constructive feedback.');
+    fb.innerHTML=formatMD(eval_);
+    const scoreMatch=eval_.match(/(\d+)\s*(?:\/\s*10|out of 10)/i);
+    if(scoreMatch) interviewScore+=parseInt(scoreMatch[1]);
+  }
   msgs.scrollTop=msgs.scrollHeight;
   if(interviewQNum>=5) showInterviewScore();
   else await nextQuestion();
@@ -1717,10 +1861,11 @@ async function aiEnhanceResume(){
   output.className='ai-response-box show';
   output.innerHTML='<span style="color:var(--muted)">✨ AI is enhancing your resume...</span>';
   const data={name:document.getElementById('rName').value,email:document.getElementById('rEmail').value,summary:document.getElementById('rSummary').value,skills:document.getElementById('rSkills').value,edu:state.resume.edu,exp:state.resume.exp,proj:state.resume.proj};
+  const prompt=`You are a resume coach for Tanvi, a CS student. Based on this resume data:\n${JSON.stringify(data)}\n\nProvide: 1) An improved professional summary (2-3 sentences), 2) 3-5 specific improvements to make, 3) Skills to add for better ATS. Keep it practical and focused on getting SDE internships.`;
   try {
-    const resp=await callClaude(`You are a resume coach for Tanvi, a CS student. Based on this resume data:\n${JSON.stringify(data)}\n\nProvide: 1) An improved professional summary (2-3 sentences), 2) 3-5 specific improvements to make, 3) Skills to add for better ATS. Keep it practical and focused on getting SDE internships.`, '', 1500);
+    const resp=await callGemini(prompt, '', 1500);
     output.innerHTML=formatMD(resp);
-  } catch(e){output.innerHTML='<span style="color:var(--red)">Error: '+esc(e.message)+'</span>';}
+  } catch(e){output.innerHTML=formatMD(localAIResponse(prompt));}
 }
 
 function exportResume(){
@@ -1737,10 +1882,12 @@ async function generateStudyPlan(){
   const output=document.getElementById('studyPlanOutput');
   output.className='ai-response-box show';
   output.innerHTML='<span style="color:var(--muted)">✨ Generating your study plan...</span>';
+  const prompt=`Create a ${days||7}-day study plan for "${subject}" for a UG CS student. ${syllabus?`Syllabus: ${syllabus}`:'Cover the key topics.'}\n\nFormat as a day-by-day plan with specific topics and time allocation. Be realistic and include breaks. Max 400 words.`;
+  const systemPrompt='You are an academic coach creating structured study plans.';
   try {
-    const resp=await callClaude(`Create a ${days||7}-day study plan for "${subject}" for a UG CS student. ${syllabus?`Syllabus: ${syllabus}`:'Cover the key topics.'}\n\nFormat as a day-by-day plan with specific topics and time allocation. Be realistic and include breaks. Max 400 words.`, 'You are an academic coach creating structured study plans.', 1500);
+    const resp=await callGemini(prompt, systemPrompt, 1500);
     output.innerHTML=formatMD(resp);
-  } catch(e){output.innerHTML='<span style="color:var(--red)">Error: '+esc(e.message)+'</span>';}
+  } catch(e){output.innerHTML=formatMD(localAIResponse(prompt, systemPrompt));}
   renderStudyWeek();
 }
 
@@ -1774,9 +1921,9 @@ async function runDailyDigest(){
   const activeProj=state.projects.filter(p=>p.status==='active');
   const prompt=`Generate a morning briefing for Tanvi (CS student/developer). Today: ${new Date().toLocaleDateString('en',{weekday:'long',month:'long',day:'numeric'})}.\n\nData:\n- Overdue tasks: ${overdue.map(t=>t.title).join(', ')||'none'}\n- Due today: ${dueToday.map(t=>t.title).join(', ')||'none'}\n- Today's events: ${todayEvs.map(e=>e.title+' at '+e.start).join(', ')||'none'}\n- Active projects: ${activeProj.map(p=>p.name+' ('+p.progress+'%)').join(', ')||'none'}\n- DSA problems solved: ${state.dsaProblems.length}\n\nGive: priorities for today, a motivational line, and one tip. Max 150 words.`;
   try {
-    const resp=await callClaude(prompt,'You are ARIA, a personal developer agent. Be warm, specific, and energising.');
+    const resp=await callGemini(prompt,'You are ARIA, a personal developer agent. Be warm, specific, and energising.');
     output.innerHTML=formatMD(resp);
-  } catch(e){output.innerHTML='<span style="color:var(--red)">Error: '+esc(e.message)+'</span>';}
+  } catch(e){output.innerHTML=formatMD(localAIResponse(prompt, 'You are ARIA, a personal developer agent. Be warm, specific, and energising.'));}
 }
 
 function requestNotifPermission(){
@@ -1826,13 +1973,21 @@ async function generateEmail(){
   if(!ctx) return alert('Add some context first.');
   const btn=document.querySelector('#emailComposer .btn-primary');
   btn.textContent='⏳ Generating...'; btn.disabled=true;
+  const prompt=`Write a professional, concise email. To: ${to}. Subject: ${subject}. Context: ${ctx}. Return ONLY the email body starting with greeting. Under 150 words. Sign as "Tanvi" (CS student, SRMIST).`;
+  const systemPrompt='You are a professional email writer for a CS student.';
   try {
-    const body=await callClaude(`Write a professional, concise email. To: ${to}. Subject: ${subject}. Context: ${ctx}. Return ONLY the email body starting with greeting. Under 150 words. Sign as "Tanvi" (CS student, SRMIST).`,'You are a professional email writer for a CS student.');
+    const body=await callGemini(prompt, systemPrompt);
     document.getElementById('draftTo').textContent=to||'(not set)';
     document.getElementById('draftSubject').textContent=subject||'(no subject)';
     document.getElementById('draftBody').textContent=body.trim();
     document.getElementById('emailResult').style.display='block';
-  } catch(e){alert('Error: '+e.message);}
+  } catch(e){
+    const body=localAIResponse(prompt, systemPrompt);
+    document.getElementById('draftTo').textContent=to||'(not set)';
+    document.getElementById('draftSubject').textContent=subject||'(no subject)';
+    document.getElementById('draftBody').textContent=body.trim();
+    document.getElementById('emailResult').style.display='block';
+  }
   btn.textContent='✨ Generate with AI'; btn.disabled=false;
 }
 
@@ -1956,7 +2111,7 @@ async function chatSend(prefill){
   const messages=state.chatHistory.slice(-14).map(m=>({role:m.role,content:m.content}));
 
   try {
-    const reply=await callClaude(messages[messages.length-1].content, systemPrompt, 1000);
+    const reply=await callGemini(messages[messages.length-1].content, systemPrompt, 1000);
     document.getElementById('typing')?.remove();
     appendChatMsg('ai',formatMD(reply));
     state.chatHistory.push({role:'assistant',content:reply});
@@ -1964,7 +2119,7 @@ async function chatSend(prefill){
     save();
   } catch(e){
     document.getElementById('typing')?.remove();
-    appendChatMsg('ai',`⚠️ Error: ${esc(e.message)}. Check your Claude API key in the code.`);
+    appendChatMsg('ai',formatMD(localAIResponse(messages[messages.length-1].content, systemPrompt)));
   }
   chatBusy=false; document.getElementById('chatSendBtn').disabled=false;
   msgs.scrollTop=msgs.scrollHeight;
